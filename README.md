@@ -50,7 +50,7 @@ In conclusion, my project is not based on any prior cs50w project and uses techn
 Scalability: The current configuration utilizes SQLite as the database, but it's flexible and can be switched to another option like PostgreSQL or MySQL by incorporating an additional Docker container. The Django Channels feature employs an In-Memory layer, which can be substituted with a different option like Redis, but this would necessitate the installation of an additional library.
 
 ### Installation and how to run
-Prerequisite: You may want to run a virtual environment before installing dependencies.
+Prerequisite: You may want to run a virtual environment before installing dependencies. And also have a working microphone to access voice type feature.
  - Install project dependencies by running `pip install -r requirements.txt`.  
  Dependencies include Django and Channels(3.0.4) module that allows Django to work with channels.
   - Make and apply migrations by running `python manage.py makemigrations` and `python manage.py migrate`.
