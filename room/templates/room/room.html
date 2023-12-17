@@ -1,0 +1,162 @@
+{%extends 'chat/layout.html' %}
+{%block title%}
+{{room.name}}
+{%endblock%}
+
+{%block content%}
+<style>
+
+.wrappers{
+    display: flex;
+    justify-content: center;
+}
+.roomdiv{
+    max-width:500px;
+    width:auto;
+    min-width: 450px;
+    margin:5px;
+    background-color: rgb(230, 222, 222);
+}
+.chat-messages{
+    background-color: rgb(230, 222, 222);
+    margin:10px;
+    padding: 20px;
+    height: 450px;
+    border-radius: 5px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+}
+.p4{
+    background-color: antiquewhite;
+    margin:10px;
+    padding:10px;
+    max-width: 450px;
+    width: auto;
+}
+.formy1{
+    display: flex;
+    justify-content: center;
+}
+.formy2 input{
+    max-width:500px;
+    width:auto;
+    padding-left: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#chat-message-submit{
+    padding:10px;
+}
+
+@media(max-width:400px){
+    .roomdiv{
+    max-width:500px;
+    width:auto;
+    min-width: 420px;
+    margin:5px;
+    background-color: rgb(230, 222, 222);
+}
+}
+</style>
+
+<div id="Header">
+    <h1>{{room.name}}</h1>
+</div>
+
+<div class="wrappers">
+<div class="roomdiv">
+<div class='chat-messages' id="chat-messages">
+    {%for m in messages%}
+    <div class="p4">
+    <p><b>@{{m.user.username}}</b></p>
+    <p style="overflow-wrap:break-word">{{m.content}}</p>
+    </div>
+    {%endfor%}
+</div>
+</div>
+</div>
+
+<div class="formy1">
+    <form method="post" action="." class="formy2">
+        {%csrf_token%}
+        <input type="text" name="content" placeholder="Your message..." id="chat-message-input">
+        <button id="chat-message-submit" class="btn btn-dark">Send</button>
+    </form>
+    <button id="convertor"style="margin-left:5px;" class="btn btn-dark" onclick="voice()">Voice</button>
+</div>
+
+
+{%endblock%}
+
+{%block scripts%}
+{{room.slug|json_script:"json-roomname"}}
+
+{{request.user.username|json_script:"json-username"}}
+
+<script>
+    const roomName=JSON.parse(document.getElementById('json-roomname').textContent)
+    const userName=JSON.parse(document.getElementById('json-username').textContent)
+    const chatSocket=new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/'
+        + roomName
+        + '/'
+    );
+    chatSocket.onmessage=function(e){
+        console.log('onmessage')
+        const data=JSON.parse(e.data);
+        if(data.message){
+            let html=`<div class="p4">
+                <p><b>@${data.username}</b></p>
+            <p style="overflow-wrap:break-word">${data.message}</p>
+            </div>`
+
+        document.querySelector('#chat-messages').innerHTML+=html;
+        scroll();
+        }
+        else{
+            alert('Empty Message!')
+        }
+    }
+    chatSocket.onclose=function(e){
+        console.log('onclose')
+    }
+
+    document.querySelector('#chat-message-submit').onclick=function(e){
+        e.preventDefault();
+        const messageInputDom=document.querySelector('#chat-message-input');
+        const message=messageInputDom.value;
+
+        chatSocket.send(JSON.stringify({
+            'message':message,
+            'username':userName,
+            'room':roomName
+        }));
+        messageInputDom.value='';
+        return false;
+    }
+
+    function scroll(){
+        const elem=document.querySelector('#chat-messages')
+        elem.scrollTop= elem.scrollHeight;
+    }
+    scroll();
+
+
+function voice(){
+    const recog=new webkitSpeechRecognition();
+    recog.lang='en-GB';
+    recog.onresult=function(event){
+        console.log(event);
+        document.getElementById('chat-message-input').value=event.results[0][0].transcript;
+    }
+    recog.start();
+}
+
+
+</script>
+
+{%endblock%}

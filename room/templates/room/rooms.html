@@ -1,0 +1,108 @@
+{%extends 'chat/layout.html' %}
+{%block title%}
+Rooms
+{%endblock%}
+
+{%block content%}
+<div style="display: flex; justify-content: center;flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; flex-direction: column; padding: 20px;">
+<div id="Header">
+    <h1>Create a room</h1>
+</div>
+<form action="{%url 'create'%}"method='post'>
+    {%csrf_token%}
+    
+    <div class="form-group" style="display: flex; align-items: center; flex-direction: column; flex-basis: auto ;">
+      <input type="text" name="creator" class="form-control" placeholder="Room Name" style="width:300px;">
+      <input type="password" class="form-control" style="width:300px;" placeholder="Enter password" name="password4">
+    
+    <input type="submit" value="Create"class="btn btn-dark" style="margin-top:5px;">
+</div>
+</form>
+</div>
+<div style="display: flex; align-items: center; flex-direction: column; padding: 20px;">
+<div id="Header">
+    <h1>Delete a room</h1>
+</div>
+<form action="{%url 'delete'%}"method='post'>
+    {%csrf_token%}
+    
+    <div class="form-group" style="display: flex; align-items: center; flex-direction: column; flex-basis: auto ;">
+      <input type="text" name="creator" class="form-control" placeholder="Room Name" style="width:300px;">
+      <input type="password" class="form-control" style="width:300px;" placeholder="Enter password" name="password4">
+    
+    <input type="submit" value="delete"class="btn btn-dark" style="margin-top:5px;">
+</div>
+</form>
+</div>
+<div style="display: flex; align-items: center; flex-direction: column; padding: 20px;">
+    <div id="Header">
+        <h1>Quick Join</h1>
+    </div>
+    <form action="{%url 'quick' %}"method='post'>
+        {%csrf_token%}
+        
+        <div class="form-group" style="display: flex; align-items: center; flex-direction: column; flex-basis: auto ;">
+          <input type="text" name="creator" class="form-control" placeholder="Room Name" style="width:300px;">
+          <input type="password" class="form-control" style="width:300px;" placeholder="Enter password" name="password4">
+        
+        <input type="submit" value="Join"class="btn btn-dark" style="margin-top:5px;">
+    </div>
+    </form>
+    </div>
+
+</div>
+<div id="Header">
+    <h1 style="padding: 15px;">Rooms</h1>
+</div>
+
+
+<div class="roomss"style="
+display:flex;
+justify-content: center;
+flex-wrap: wrap;
+">
+    {%for r in rooms%}
+    <div style="
+    display:inline-flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px;
+    ">
+        <div style="padding-bottom: 20px;">
+          <h5  style="overflow-wrap:break-word;">{{r.name}}</h5>
+          <form action="{%url 'room' r.slug %}" method="post">
+            <div>
+            {%csrf_token%}
+        <input style="width:150px;" type="password" placeholder="Enter password" name="password3">
+         <button>Join</button>
+          </div>
+          </form>
+        </div>
+        </div>
+    {%endfor%}
+</div>
+{% if error %}
+    <div class="alert alert-danger" role="alert"style="display:flex; justify-content: center;" onload="reloader()">It already exists in the rooms try an unique name...<a style="color: blue;"href="{%url 'rooms'%}">GO BACK</a></div>
+{%endif%}
+{% if err %}
+    <div class="alert alert-danger" role="alert"style="display:flex; justify-content: center;">Blank names are not allowed...<a style="color: blue;"href="{%url 'rooms'%}">GO BACK</a></div>
+{%endif%}
+{% if error1 %}
+    <div class="alert alert-danger" role="alert"style="display:flex; justify-content: center;">Password is wrong...<a style="color: blue;"href="{%url 'rooms'%}">GO BACK</a></div>
+{%endif%}
+{% if err1 %}
+    <div class="alert alert-danger" role="alert"style="display:flex; justify-content: center;">Blank passwords are not allowed...<a style="color: blue;"href="{%url 'rooms'%}">GO BACK</a></div>
+{%endif%}
+{% if error11 %}
+    <div class="alert alert-danger" role="alert"style="display:flex; justify-content: center;">Room Name or Password is wrong...<a style="color: blue;"href="{%url 'rooms'%}">GO BACK</a></div>
+
+    {%endif%}
+{% if err11 %}
+    <div class="alert alert-danger" role="alert"style="display:flex; justify-content: center;">Blank Room names and Passwords are not allowed...<a style="color: blue;"href="{%url 'rooms'%}">GO BACK</a></div>
+{%endif%}
+{%endblock%}
+
+
+
+
